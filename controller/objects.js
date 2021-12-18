@@ -22,5 +22,8 @@ module.exports = {
       return res.sendStatus(500);
     }
   },
-  getObject: async (req, res) => {},
+  getObject: async (req, res) => {
+    const objectId = req.params.objectId;
+    // console.log(objectId);
+  },
 };
