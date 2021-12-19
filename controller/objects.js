@@ -25,12 +25,12 @@ module.exports = {
     }
   },
   getObject: async (req, res) => {
+    const objectId = req.params.objectId;
+
     try {
       const ckeckRegex = new RegExp(`[a-zA-Z0-9]{40}`);
       const objectPattern =
         /^(?<type>blob|commit|tree|tag) (?<size>\d+)\0(?<content>.*)\n$/;
-
-      const objectId = req.params.objectId;
 
       if (!ckeckRegex.exec(objectId))
         return res.status(400).json(`ClientError: ${objectId}`);
@@ -45,7 +45,7 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(404).json(`NotFoundError: ${req.params.objectId}`);
+      return res.status(404).json(`NotFoundError: ${objectId}`);
     }
   },
 };
