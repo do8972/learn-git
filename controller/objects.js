@@ -8,7 +8,7 @@ module.exports = {
     try {
       const { content, objectType, write } = req.body;
       const data = `${objectType} ${content.length}\0${content}`;
-      // const data = "blob 12\0Hello, Git!\n";
+
       const hashed = crypto.createHash("sha1").update(data).digest("hex");
       const dirName = [hashed.substring(0, 2), hashed.substring(2)];
       const compression = deflateSync(data, { level: 1 }); // level1로 압축 (내용으로 들어감.)
