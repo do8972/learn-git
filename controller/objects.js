@@ -33,7 +33,7 @@ module.exports = {
       const dirName = [objectId.substring(0, 2), objectId.substring(2)];
 
       if (!regex.exec(objectId))
-        return res.status(400).json("ClientError: objectId");
+        return res.status(400).json(`ClientError: ${objectId}`);
 
       const find = fs.readFileSync(`../.my-git/${dirName[0]}/${dirName[1]}`);
       const unzip = zlib.inflateSync(find);
@@ -50,7 +50,7 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
-      return res.status(404).json("NotFoundError: objectId");
+      return res.status(404).json(`NotFoundError: ${objectId}`);
     }
   },
 };
