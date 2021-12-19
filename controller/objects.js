@@ -5,16 +5,19 @@ const crypto = require("crypto");
 
 module.exports = {
   putObject: async (req, res) => {
-    try {
-      const { content, objectType, write } = req.body;
-      const data = `${objectType} ${content.length}\0${content}`;
+    const { content, objectType, write } = req.body;
+    const data = `${objectType} ${content.length}\0${content}`;
 
+    try {
       const hashed = crypto.createHash("sha1").update(data).digest("hex");
       const dirName = [hashed.substring(0, 2), hashed.substring(2)];
       const compression = deflateSync(data, { level: 1 }); // level1로 압축 (내용으로 들어감.)
 
-      fs.mkdirSync(`../.my-git/${dirName[0]}`, { recursive: true });
-      fs.writeFileSync(`../.my-git/${dirName[0]}/${dirName[1]}`, compression);
+      if (write && !fs.existsSync(`../.my-git/${dirName[0]}`)) {
+        fs.mkdirSync(`../.my-git/${dirName[0]}`, { recursive: true });
+        fs.writeFileSync(`../.my-git/${dirName[0]}/${dirName[1]}`, compression);
+      }
+
       return res.status(200).json({ objectId: hashed });
     } catch (error) {
       console.log(error);
@@ -23,32 +26,26 @@ module.exports = {
   },
   getObject: async (req, res) => {
     try {
-      const regex = new RegExp(`[a-zA-Z0-9]{40}`);
-      const regexNum = /[^0-9]/g;
-      const regexContent = /(?<=\0).*[^\n]/g;
+      const ckeckRegex = new RegExp(`[a-zA-Z0-9]{40}`);
+      const objectPattern =
+        /^(?<type>blob|commit|tree|tag) (?<size>\d+)\0(?<content>.*)\n$/;
 
       const objectId = req.params.objectId;
-      const dirName = [objectId.substring(0, 2), objectId.substring(2)];
 
-      if (!regex.exec(objectId))
+      if (!ckeckRegex.exec(objectId))
         return res.status(400).json(`ClientError: ${objectId}`);
+
+      const dirName = [objectId.substring(0, 2), objectId.substring(2)];
 
       const find = fs.readFileSync(`../.my-git/${dirName[0]}/${dirName[1]}`);
       const unzip = zlib.inflateSync(find);
 
-      const content = unzip.toString().split(" ");
-      const mainConent = content.slice(1).join(" ");
-
       return res.status(200).json({
-        data: {
-          type: content[0],
-          content: regexContent.exec(mainConent)[0],
-          size: content[1].replace(regexNum, ""),
-        },
+        data: { ...objectPattern.exec(unzip.toString()).groups },
       });
     } catch (error) {
       console.log(error);
-      return res.status(404).json(`NotFoundError: ${objectId}`);
+      return res.status(404).json(`NotFoundError: ${req.params.objectId}`);
     }
   },
 };
