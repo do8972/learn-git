@@ -11,7 +11,7 @@ module.exports = {
     try {
       const hashed = crypto.createHash("sha1").update(data).digest("hex");
       const dirName = [hashed.substring(0, 2), hashed.substring(2)];
-      const compression = deflateSync(data, { level: 1 }); // level1로 압축 (내용으로 들어감.)
+      const compression = deflateSync(data, { level: 1 }); // level1로 압축 (내용으로 들어감)
 
       if (write && !fs.existsSync(`../.my-git/${dirName[0]}`)) {
         fs.mkdirSync(`../.my-git/${dirName[0]}`, { recursive: true });
