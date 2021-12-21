@@ -7,7 +7,7 @@ module.exports = {
   putObject: async (req, res) => {
     const { content, objectType, write } = req.body;
     const data = `${objectType} ${content.length}\0${content}`;
-
+    // test
     try {
       const hashed = crypto.createHash("sha1").update(data).digest("hex");
       const dirName = [hashed.substring(0, 2), hashed.substring(2)];
