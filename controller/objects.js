@@ -7,7 +7,7 @@ module.exports = {
   putObject: async (req, res) => {
     const { content, objectType, write } = req.body;
     const data = `${objectType} ${content.length}\0${content}`;
-    // test
+    
     try {
       const hashed = crypto.createHash("sha1").update(data).digest("hex");
       const dirName = [hashed.substring(0, 2), hashed.substring(2)];
@@ -28,13 +28,13 @@ module.exports = {
     const objectId = req.params.objectId;
 
     try {
-      const ckeckRegex = new RegExp(`[a-zA-Z0-9]{40}`);
+      const ckeckRegex = new RegExp(`[a-zA-Z0-9]{4,40}`);
       const objectPattern =
         /^(?<type>blob|commit|tree|tag) (?<size>\d+)\0(?<content>.*)\n$/;
 
       if (!ckeckRegex.exec(objectId))
         return res.status(400).json(`ClientError: ${objectId}`);
-
+      
       const dirName = [objectId.substring(0, 2), objectId.substring(2)];
 
       const find = fs.readFileSync(`../.my-git/${dirName[0]}/${dirName[1]}`);
