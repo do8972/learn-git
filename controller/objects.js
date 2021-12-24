@@ -36,8 +36,20 @@ module.exports = {
         return res.status(400).json(`ClientError: ${objectId}`);
       
       const dirName = [objectId.substring(0, 2), objectId.substring(2)];
+      
+      if (!fs.existsSync(`../.my-git/${dirName[0]}`)) {
+        return res.status(404).json(`NotFoundError: ${objectId}`);
+      }
 
-      const find = fs.readFileSync(`../.my-git/${dirName[0]}/${dirName[1]}`);
+      const fileNameChack = fs.readdirSync(`../.my-git/${dirName[0]}`)
+      .filter((el) => {
+        return el.slice(0, dirName[1].length) === dirName[1]})
+
+      if (fileNameChack.length !== 1) {
+        return res.status(400).json(`aLotOfFiles: ${fileNameChack}`)
+      }
+      
+      const find = fs.readFileSync(`../.my-git/${dirName[0]}/${fileNameChack}`);
       const unzip = zlib.inflateSync(find);
 
       return res.status(200).json({
