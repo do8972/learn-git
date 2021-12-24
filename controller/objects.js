@@ -46,7 +46,7 @@ module.exports = {
         return el.slice(0, dirName[1].length) === dirName[1]})
 
       if (fileNameChack.length !== 1) {
-        return res.status(400).json(`aLotOfFiles: ${fileNameChack}`)
+        return res.status(400).json(`overlappingFiles: ${fileNameChack}`)
       }
       
       const find = fs.readFileSync(`../.my-git/${dirName[0]}/${fileNameChack}`);
