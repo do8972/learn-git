@@ -45,7 +45,7 @@ module.exports = {
       .filter((fileName) => {
         return fileName.slice(0, dirName[1].length) === dirName[1]})
 
-      if (fileNameChack.length !== 1) { // 존재하지 않는다면 55줄로.
+      if (fileNameChack.length >= 1) {
         return res.status(400).json(`overlappingFiles: ${fileNameChack}`)
       }
       
