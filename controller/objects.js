@@ -45,7 +45,7 @@ module.exports = {
       .filter((fileName) => {
         return fileName.slice(0, dirName[1].length) === dirName[1]})
 
-      if (fileNameChack.length >= 1) {
+      if (fileNameChack.length >= 2) {
         return res.status(400).json(`overlappingFiles: ${fileNameChack}`)
       }
       
